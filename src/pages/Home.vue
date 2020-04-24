@@ -1,15 +1,18 @@
 <template>
     <div class="page">
-        <elevator1 v-for="o in 5" :key="o" class="card"></elevator1>
+        <inside v-for="o in 5" :key="o" class="card"></inside>
+        <outside></outside>
     </div>
 </template>
 
 <script>
-import Elevator1 from "./components/elevator1"
+import Inside from "./components/inside"
+import Outside from "./components/outside"
 export default {
     name: "Home",
     components: {
-        Elevator1
+        Inside,
+        Outside
     }
 }
 </script>

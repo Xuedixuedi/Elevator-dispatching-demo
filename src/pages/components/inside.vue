@@ -10,17 +10,46 @@
             </el-card>
             <div class="button-group">
                 <div v-for="o in 20" :key="o" class="button-place">
-                    <el-button type="primary" plain class="button">{{
-                        21 - o
-                    }}</el-button>
+                    <el-button type="primary" plain class="button">
+                        {{ 21 - o }}
+                    </el-button>
                 </div>
+            </div>
+            <div class="control">
+                <el-switch
+                    class="switch"
+                    style="display: block"
+                    v-model="value2"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"
+                    active-text="开门"
+                    inactive-text="关门"
+                >
+                </el-switch>
+                <el-button
+                    type="warning"
+                    icon="el-icon-phone"
+                    circle
+                ></el-button>
+                <el-button
+                    type="danger"
+                    icon="el-icon-message-solid"
+                    circle
+                ></el-button>
             </div>
         </el-card>
     </div>
 </template>
 
 <script>
-export default {}
+export default {
+    name: "Inside",
+    data() {
+        return {
+            value2: false
+        }
+    }
+}
 </script>
 
 <style lang="stylus" scoped>
@@ -51,7 +80,7 @@ export default {}
         width: 100%
         overflow: hidden;
         height: 0
-        padding-bottom: 230%
+        padding-bottom: 200%
         display: flex;
         flex-wrap: wrap;
 
@@ -67,5 +96,17 @@ export default {}
         }
 
     }
+
+    .control{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        .switch{
+            margin-left: 20px;
+        }
+    }
+
+
 }
 </style>
