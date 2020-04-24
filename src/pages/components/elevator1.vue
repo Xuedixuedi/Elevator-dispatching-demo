@@ -1,0 +1,71 @@
+<template>
+    <div class="box">
+        <el-card class="box-card">
+            <el-card class="floor-num" shadow="always">
+                <div>
+                    <i class="el-icon-caret-top"></i>
+                    1
+                    <i class="el-icon-caret-bottom"></i>
+                </div>
+            </el-card>
+            <div class="button-group">
+                <div v-for="o in 20" :key="o" class="button-place">
+                    <el-button type="primary" plain class="button">{{
+                        21 - o
+                    }}</el-button>
+                </div>
+            </div>
+        </el-card>
+    </div>
+</template>
+
+<script>
+export default {}
+</script>
+
+<style lang="stylus" scoped>
+
+.box-card {
+    width: 340px;
+    height: 800px;
+    padding:10px
+
+    .floor-num {
+        background-color: #409eff;
+        text-align: center;
+        font-size: 150%
+        color: #ffffff;
+        margin-bottom: 20px;
+
+        .el-icon-caret-top{
+            margin-right:40px
+        }
+
+        .el-icon-caret-bottom{
+            margin-left:40px
+        }
+    }
+
+    .button-group{
+        // background-color:#267837
+        width: 100%
+        overflow: hidden;
+        height: 0
+        padding-bottom: 230%
+        display: flex;
+        flex-wrap: wrap;
+
+        .button-place{
+            width: 50%
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px
+
+            .button{
+                width:120px
+            }
+        }
+
+    }
+}
+</style>
