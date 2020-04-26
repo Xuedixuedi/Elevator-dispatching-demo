@@ -18,11 +18,6 @@ export default {
 </script>
 
 <style>
-.page {
-    /* display: flex;
-    justify-content: space-between; */
-}
-
 .card {
     display: inline-flex;
     width: 370px;

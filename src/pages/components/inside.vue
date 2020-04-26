@@ -27,11 +27,13 @@
                 >
                 </el-switch>
                 <el-button
+                    @click="handlePhoneClick()"
                     type="warning"
                     icon="el-icon-phone"
                     circle
                 ></el-button>
                 <el-button
+                    @click="handleBellClick()"
                     type="danger"
                     icon="el-icon-message-solid"
                     circle
@@ -47,6 +49,14 @@ export default {
     data() {
         return {
             value2: false
+        }
+    },
+    methods: {
+        handlePhoneClick() {
+            alert("☎️请求通话！☎️")
+        },
+        handleBellClick() {
+            alert("🆘请求支援!🆘")
         }
     }
 }
@@ -76,7 +86,6 @@ export default {
     }
 
     .button-group{
-        // background-color:#267837
         width: 100%
         overflow: hidden;
         height: 0
