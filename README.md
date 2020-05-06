@@ -1,10 +1,10 @@
 # elevator-dispatching-demo
 
-> A Vue.js project
+> A simple elevator dispatching system realized by Javascript.
 
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 npm install
 

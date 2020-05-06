@@ -4,12 +4,16 @@
             <el-card class="floor-num" shadow="always">
                 <div>
                     <i class="el-icon-caret-top"></i>
-                    1
+                    {{ this.inputFloor }}
                     <i class="el-icon-caret-bottom"></i>
                 </div>
             </el-card>
             <div class="button-group">
-                <div v-for="o in 20" :key="o" class="button-place">
+                <div
+                    v-for="o in this.floor_count"
+                    :key="o"
+                    class="button-place"
+                >
                     <el-button type="primary" plain class="button">
                         {{ 21 - o }}
                     </el-button>
@@ -19,11 +23,12 @@
                 <el-switch
                     class="switch"
                     style="display: block"
-                    v-model="value2"
+                    v-model="door"
                     active-color="#13ce66"
                     inactive-color="#ff4949"
                     active-text="开门"
                     inactive-text="关门"
+                    @click.native="doorAlert()"
                 >
                 </el-switch>
                 <el-button
@@ -48,8 +53,16 @@ export default {
     name: "Inside",
     data() {
         return {
-            value2: false
+            door: false, //门的开关状态
+            max_floor: 20,
+            min_floor: 1,
+            call_queue: [] //外部电梯请求队列
         }
+    },
+    props: {
+        ele_id: Number, //电梯编号
+        inputFloor: Number, //当前楼层
+        floor_count: Number //来自父组件的总楼层数
     },
     methods: {
         handlePhoneClick() {
@@ -57,6 +70,10 @@ export default {
         },
         handleBellClick() {
             alert("🆘请求支援!🆘")
+        },
+        doorAlert() {
+            alert("运行期间禁止开门！")
+            this.door = false
         }
     }
 }
