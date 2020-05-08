@@ -5,7 +5,7 @@
                 v-for="o in this.ele_count"
                 :key="o"
                 class="card"
-                :inputFloor="floor[2]"
+                :inputFloor="floor[0]"
                 :floor_count="floor_count"
                 :ele_id="o"
             ></inside>
