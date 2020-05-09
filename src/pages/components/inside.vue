@@ -3,9 +3,17 @@
         <el-card class="box-card">
             <el-card class="floor-num" shadow="always">
                 <div>
-                    <i class="el-icon-caret-top"></i>
+                    <i class="el-icon-caret-top" v-show="this.going_up"></i>
+                    <i
+                        class="el-icon-caret-top disabled"
+                        v-show="!this.going_up"
+                    ></i>
                     {{ this.current_floor }}
-                    <i class="el-icon-caret-bottom"></i>
+                    <i class="el-icon-caret-bottom" v-show="!this.going_up"></i>
+                    <i
+                        class="el-icon-caret-bottom disabled"
+                        v-show="this.going_up"
+                    ></i>
                 </div>
             </el-card>
             <div class="button-group">
@@ -18,7 +26,7 @@
                         type="primary"
                         plain
                         class="button"
-                        @click="dial(o)"
+                        @click="handleInsideButtonClick(o)"
                         :class="{ 'button-click': button_click[o] }"
                     >
                         {{ o }}
@@ -64,7 +72,7 @@ export default {
             running: false, //是否在运行
             going_up: true, //true向上 false向下
             door: false, //门的开关状态
-            current_floor: this.inputFloor, //当前楼层
+            current_floor: 1, //当前楼层
             max_floor: 20,
             min_floor: 1,
             floor_id: [],
@@ -75,7 +83,6 @@ export default {
     },
     props: {
         ele_id: Number, //电梯编号
-        inputFloor: Number, //当前楼层
         floor_count: Number //总楼层数
     },
     methods: {
@@ -87,33 +94,45 @@ export default {
         },
         //更新上下楼的时候的内部指示灯
         updateFloorInfo() {
-            console.log(
-                "Up:",
-                this.going_up,
-                "current_floor:",
-                this.current_floor
+            //每秒向父组件传递该电梯当前的id和楼层
+            this.$emit(
+                "childStatus",
+                this.ele_id,
+                this.current_floor,
+                this.running,
+                this.call,
+                this.going_up
             )
+            // console.log(
+            //     "Up:",
+            //     this.going_up,
+            //     "current_floor:",
+            //     this.current_floor,
+            //     "call:",
+            //     this.call
+            // )
         },
         //内部按钮呼梯
-        handleInsideButtonClick(o) {
-            this.button_click[o] = true
+        handleInsideButtonClick(floor) {
+            this.button_click[floor] = true
             //o是呼梯楼层,把内部呼梯信号改成1，加入呼梯队列
-            if (!this.inside[o]) {
-                this.inside[o] = 1
-                this.call.push(o)
-            }
-            this.checkStatus()
-            console.log("call=", this.call, "running= ", this.running)
+            this.inside[floor] = 1
+            this.dial(floor)
+        },
+        //外部button click
+        outsideButtonClick(floor) {
+            this.outside[floor] = 1
+            this.dial(floor)
         },
         //blog里面说，用一个按钮函数就可以
         dial(floor) {
-            if (this.call.indexOf(floor) < 0) {
-                this.call.push(floor)
-                this.call.sort()
-                if (!this.running) {
-                    this.checkStatus()
-                }
+            // if (this.call.indexOf(floor) < 0) {
+            this.call.push(floor)
+            this.call.sort()
+            if (!this.running) {
+                this.checkStatus()
             }
+            // }
         },
         //找最小最大值
         getMinInQueue(arr) {
@@ -128,6 +147,7 @@ export default {
         },
         //在队列中删除指定楼层
         removeFromQueue(queue, floor) {
+            console.log("要删除的数字是：" + floor)
             var index = queue.indexOf(floor)
             if (index > -1) {
                 queue.splice(index, 1)
@@ -143,8 +163,10 @@ export default {
         },
         //开门警告
         doorAlert() {
-            alert("运行期间禁止开门！")
-            this.door = false
+            if (this.running && this.door == false) {
+                alert("运行期间禁止开门！")
+                this.door = false
+            }
         },
         //判断状态，每隔一段时间执行
         checkStatus() {
@@ -175,12 +197,13 @@ export default {
                 if (this.call.indexOf(this.current_floor) > -1) {
                     this.ding(this.current_floor)
                 } else {
-                    this.going_up ? this.moveUp() : this.moveDown
+                    this.going_up ? this.moveUp() : this.moveDown()
                     this.updateFloorInfo()
                 }
                 this.checkStatus()
             }
-            console.log("Not Run")
+
+            console.log("Running:", this.running)
         },
         //暂停计时器，熄灭该楼层的灯光
         ding(floor) {
@@ -192,6 +215,7 @@ export default {
             }
             //把当前楼层移除队列
             this.removeFromQueue(this.call, floor)
+            this.button_click[floor] = 0
             this.openDoor()
             //不会重复执行的延时函数
             setTimeout(function() {
@@ -273,6 +297,11 @@ export default {
         .el-icon-caret-bottom{
             margin-left:40px
         }
+
+        .disabled{
+            color: #152959
+        }
+
     }
 
     .button-group{
