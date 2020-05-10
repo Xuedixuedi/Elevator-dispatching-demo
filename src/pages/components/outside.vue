@@ -34,14 +34,18 @@ export default {
         //点击上、下按钮，把该楼层加入距离该楼层最近的电梯的等待队列中
         handleUpClick() {
             if (!this.up) {
-                //找到距离该楼层最近的电梯id
-                var near_ele_id = 5
                 //把当前呼叫楼层传给父组件
                 this.up = true
-                this.$emit("childCallFloor", this.floor_id)
+                this.$emit("childCallFloorUp", this.floor_id)
             }
         },
-        handleDownClick() {}
+        handleDownClick() {
+            if (!this.down) {
+                //把当前呼叫楼层传给父组件
+                this.up = true
+                this.$emit("childCallFloorDown", this.floor_id)
+            }
+        }
     }
 }
 </script>

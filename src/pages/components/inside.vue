@@ -76,14 +76,19 @@ export default {
             max_floor: 20,
             min_floor: 1,
             floor_id: [],
-            outside: [], //外部电梯请求队列
+            outside_up: [], //外部电梯向上请求队列
+            outside_down: [], //外部电梯向下请求队列
             inside: [], //内部呼梯信号
             call: [] //存放内外所有呼梯层
         }
     },
     props: {
         ele_id: Number, //电梯编号
-        floor_count: Number //总楼层数
+        floor_count: Number, //总楼层数
+        call_ele_id: Number,
+        press_floor: Number, //父组件的按下楼层
+        up: Boolean, //是向上
+        down: Boolean
     },
     methods: {
         handlePhoneClick() {
@@ -95,6 +100,7 @@ export default {
         //更新上下楼的时候的内部指示灯
         updateFloorInfo() {
             //每秒向父组件传递该电梯当前的id和楼层
+            //接受父组件传值回来
             this.$emit(
                 "childStatus",
                 this.ele_id,
@@ -103,6 +109,7 @@ export default {
                 this.call,
                 this.going_up
             )
+            // this.addOutside()
             // console.log(
             //     "Up:",
             //     this.going_up,
@@ -115,7 +122,7 @@ export default {
         //内部按钮呼梯
         handleInsideButtonClick(floor) {
             this.button_click[floor] = true
-            //o是呼梯楼层,把内部呼梯信号改成1，加入呼梯队列
+            //floor是呼梯楼层,把内部呼梯信号改成1，加入呼梯队列
             this.inside[floor] = 1
             this.dial(floor)
         },
@@ -127,8 +134,10 @@ export default {
         //blog里面说，用一个按钮函数就可以
         dial(floor) {
             // if (this.call.indexOf(floor) < 0) {
+            console.log("现在按下第几层？", this.press_floor)
             this.call.push(floor)
             this.call.sort()
+            console.log("现在的队列是：", this.call)
             if (!this.running) {
                 this.checkStatus()
             }
@@ -192,6 +201,19 @@ export default {
                     : (this.goingup = true)
             }
         },
+        //把外面的加进来
+        addOutside(up, down, press_floor) {
+            console.log("父组件触发我了,我是电梯", this.ele_id)
+            console.log("现在按下第几层？", press_floor)
+            if (up == true) {
+                this.outside_up[press_floor - 1] = 1
+            } else if (down == true) {
+                console.log("按下了向下按键")
+                this.outside_down[press_floor - 1] = 1
+            }
+            console.log(this.outside_down)
+            this.dial(press_floor)
+        },
         run() {
             if (this.running) {
                 if (this.call.indexOf(this.current_floor) > -1) {
@@ -202,7 +224,6 @@ export default {
                 }
                 this.checkStatus()
             }
-
             console.log("Running:", this.running)
         },
         //暂停计时器，熄灭该楼层的灯光
@@ -242,7 +263,8 @@ export default {
         //初始化电梯状态
         for (var i = 0; i < this.max_floor; ++i) {
             this.button_click[i] = false
-            this.outside[i] = 0
+            this.outside_up[i] = 0
+            this.outside_down[i] = 0
             this.inside[i] = 0
             this.floor_id[i] = i + 1 //这个顺序是 21-o
         }
