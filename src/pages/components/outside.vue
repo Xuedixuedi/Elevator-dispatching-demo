@@ -3,7 +3,11 @@
         <div>
             <el-tag class="number-tag">{{ this.floor_id }}</el-tag>
             <el-button-group>
-                <el-button size="small" type="primary" @click="handleUpClick()"
+                <el-button
+                    size="small"
+                    type="primary"
+                    @click="handleUpClick()"
+                    :class="{ 'button-click': this.up }"
                     ><i class="el-icon-top"></i
                 ></el-button>
                 <el-button
@@ -42,7 +46,7 @@ export default {
         handleDownClick() {
             if (!this.down) {
                 //把当前呼叫楼层传给父组件
-                this.up = true
+                this.down = true
                 this.$emit("childCallFloorDown", this.floor_id)
             }
         }
@@ -56,4 +60,8 @@ export default {
     text-align: center;
     margin: 20px auto 20px auto;
 }
+
+/* .button-click {
+    background: blue;
+} */
 </style>

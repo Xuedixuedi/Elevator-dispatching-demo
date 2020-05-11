@@ -109,21 +109,13 @@ export default {
                 this.call,
                 this.going_up
             )
-            // this.addOutside()
-            // console.log(
-            //     "Up:",
-            //     this.going_up,
-            //     "current_floor:",
-            //     this.current_floor,
-            //     "call:",
-            //     this.call
-            // )
         },
         //内部按钮呼梯
         handleInsideButtonClick(floor) {
             this.button_click[floor] = true
             //floor是呼梯楼层,把内部呼梯信号改成1，加入呼梯队列
             this.inside[floor] = 1
+            console.log("内部按键对列我康康", this.inside)
             this.dial(floor)
         },
         //外部button click
@@ -134,7 +126,7 @@ export default {
         //blog里面说，用一个按钮函数就可以
         dial(floor) {
             // if (this.call.indexOf(floor) < 0) {
-            console.log("现在按下第几层？", this.press_floor)
+            console.log("现在按下第几层？", floor)
             this.call.push(floor)
             this.call.sort()
             console.log("现在的队列是：", this.call)
@@ -145,13 +137,37 @@ export default {
         },
         //找最小最大值
         getMinInQueue(arr) {
-            if (length.arr) {
+            if (arr.length <= 0) {
+                console.log("找不到最小值")
+                return false
+            }
+            if (arr.length == 1) {
                 return arr[0]
+            } else {
+                var min = arr[0]
+                for (var i in arr) {
+                    if (arr[i] < min) {
+                        min = arr[i]
+                    }
+                }
+                return min
             }
         },
         getMaxInQueue(arr) {
-            if (length.arr) {
-                return arr[arr.length - 1]
+            if (arr.length <= 0) {
+                console.log("找不到最大值")
+                return false
+            }
+            if (arr.length == 1) {
+                return arr[0]
+            } else {
+                var max = arr[0]
+                for (var i in arr) {
+                    if (arr[i] > max) {
+                        max = arr[i]
+                    }
+                }
+                return max
             }
         },
         //在队列中删除指定楼层
@@ -189,16 +205,17 @@ export default {
                 this.going_up = false
             } else {
                 //在中间层的状态判断
-                this.goingup &&
+                this.going_up &&
                 (!this.running ||
-                    this.current_floor < this.getMaxInQueue(this.call))
-                    ? (this.goingup = true)
-                    : (this.goingup = false)
-                !this.goingup &&
+                    this.current_floor <= this.getMaxInQueue(this.call))
+                    ? (this.going_up = true)
+                    : (this.going_up = false)
+                !this.going_up &&
                 (!this.running ||
-                    this.current_floor > this.getMinInQueue(this.call))
-                    ? (this.goingup = false)
-                    : (this.goingup = true)
+                    this.current_floor >= this.getMinInQueue(this.call))
+                    ? (this.going_up = false)
+                    : (this.going_up = true)
+                console.log(this.getMaxInQueue(this.call), this.going_up)
             }
         },
         //把外面的加进来
@@ -206,25 +223,67 @@ export default {
             console.log("父组件触发我了,我是电梯", this.ele_id)
             console.log("现在按下第几层？", press_floor)
             if (up == true) {
-                this.outside_up[press_floor - 1] = 1
+                console.log("按下了向上按键")
+                this.outside_up[press_floor] = 1
             } else if (down == true) {
                 console.log("按下了向下按键")
-                this.outside_down[press_floor - 1] = 1
+                this.outside_down[press_floor] = 1
             }
-            console.log(this.outside_down)
             this.dial(press_floor)
         },
         run() {
+            var need_stop = false
             if (this.running) {
                 if (this.call.indexOf(this.current_floor) > -1) {
-                    this.ding(this.current_floor)
+                    //到达内部呼叫楼层
+                    if (this.inside[this.current_floor] == 1) {
+                        this.removeFromQueue(this.call, this.current_floor)
+                        this.inside[this.current_floor] = 0
+                        this.button_click[this.current_floor] = 0
+                        need_stop = true
+                    }
+                    if (this.going_up) {
+                        if (this.outside_up[this.current_floor] == 1) {
+                            console.log("到达外面呼叫：", this.current_floor)
+                            this.removeFromQueue(this.call, this.current_floor)
+                            this.outside_up[this.current_floor] = 0
+                            need_stop = true
+                        }
+                        if (
+                            this.outside_down[this.current_floor] == 1 &&
+                            this.current_floor == this.getMaxInQueue(this.call)
+                        ) {
+                            this.removeFromQueue(this.call, this.current_floor)
+                            outside_down[this.current_floor] = 0
+                            need_stop = true
+                        }
+                    } else {
+                        if (this.outside_down[this.current_floor] == 1) {
+                            this.removeFromQueue(this.call, this.current_floor)
+                            this.outside_down[this.current_floor] = 0
+                            need_stop = true
+                        }
+                        if (
+                            this.outside_up[this.current_floor] == 1 &&
+                            this.current_floor == this.getMinInQueue(this.call)
+                        ) {
+                            this.removeFromQueue(this.call, this.current_floor)
+                            this.outside_up[this.current_floor] = 0
+                            need_stop = true
+                        }
+                    }
+                    if (need_stop) {
+                        console.log("stop:", this.current_floor)
+                        this.ding(this.current_floor)
+                    } else {
+                        this.going_up ? this.moveUp() : this.moveDown()
+                    }
                 } else {
                     this.going_up ? this.moveUp() : this.moveDown()
                     this.updateFloorInfo()
                 }
                 this.checkStatus()
             }
-            console.log("Running:", this.running)
         },
         //暂停计时器，熄灭该楼层的灯光
         ding(floor) {
@@ -234,9 +293,6 @@ export default {
             if (this.timer) {
                 clearInterval(this.timer)
             }
-            //把当前楼层移除队列
-            this.removeFromQueue(this.call, floor)
-            this.button_click[floor] = 0
             this.openDoor()
             //不会重复执行的延时函数
             setTimeout(function() {
@@ -261,12 +317,12 @@ export default {
     },
     created() {
         //初始化电梯状态
-        for (var i = 0; i < this.max_floor; ++i) {
+        for (var i = 0; i <= this.max_floor; ++i) {
             this.button_click[i] = false
             this.outside_up[i] = 0
             this.outside_down[i] = 0
             this.inside[i] = 0
-            this.floor_id[i] = i + 1 //这个顺序是 21-o
+            this.floor_id[i] = i //这个顺序是
         }
     },
     mounted() {
