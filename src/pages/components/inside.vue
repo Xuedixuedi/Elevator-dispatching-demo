@@ -110,6 +110,13 @@ export default {
                 this.going_up
             )
         },
+        //更新outside
+        updateOutsideUp(floor) {
+            this.$emit("updateOutsideUp", floor)
+        },
+        updateOutsideDown(floor) {
+            this.$emit("updateOutsideDown", floor)
+        },
         //内部按钮呼梯
         handleInsideButtonClick(floor) {
             this.button_click[floor] = true
@@ -247,6 +254,7 @@ export default {
                             console.log("到达外面呼叫：", this.current_floor)
                             this.removeFromQueue(this.call, this.current_floor)
                             this.outside_up[this.current_floor] = 0
+                            this.updateOutsideUp(this.current_floor)
                             need_stop = true
                         }
                         if (
@@ -254,13 +262,15 @@ export default {
                             this.current_floor == this.getMaxInQueue(this.call)
                         ) {
                             this.removeFromQueue(this.call, this.current_floor)
-                            outside_down[this.current_floor] = 0
+                            this.outside_down[this.current_floor] = 0
+                            this.updateOutsideDown(this.current_floor)
                             need_stop = true
                         }
                     } else {
                         if (this.outside_down[this.current_floor] == 1) {
                             this.removeFromQueue(this.call, this.current_floor)
                             this.outside_down[this.current_floor] = 0
+                            this.updateOutsideDown(this.current_floor)
                             need_stop = true
                         }
                         if (
@@ -269,6 +279,7 @@ export default {
                         ) {
                             this.removeFromQueue(this.call, this.current_floor)
                             this.outside_up[this.current_floor] = 0
+                            this.updateOutsideUp(this.current_floor)
                             need_stop = true
                         }
                     }

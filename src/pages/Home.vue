@@ -12,6 +12,8 @@
                 :down="down"
                 :call_ele_id="call_ele_id"
                 @childStatus="getChildStatus"
+                @updateOutsideDown="updateOutsideDown"
+                @updateOutsideUp="updateOutsideUp"
                 ref="insidechild"
             ></inside>
         </div>
@@ -23,6 +25,7 @@
                 :floor_id="o"
                 @childCallFloorUp="callFloorUp"
                 @childCallFloorDown="callFloorDown"
+                ref="outsideChild"
             ></outside>
         </div>
     </div>
@@ -90,16 +93,7 @@ export default {
         calculateUpDistance(press_floor) {
             var maxDistance = 2 * this.floor_count //可能出现的最小距离
             var distance = 0
-            var elevatorToPush = 1 //放入的电梯序号
-            // 希望在最短时间内达到呼层
-            // 计算到呼层的步数（1s/步）+5s*当中停下的楼层：
-            // if没有运动 else：
-            // if当前层在呼层的下面或当前层
-            //      电梯向上运动
-            //      电梯向下运动
-            // else当前层在呼层的上面
-            //      电梯向上运动
-            //      电梯向下运动
+            var elevatorToPush = 1
             for (var i = 0; i < this.ele_count; i++) {
                 if (!this.running[i]) {
                     distance = Math.abs(press_floor - this.current_floor[i])
@@ -160,7 +154,7 @@ export default {
                                 minInQueue +
                                 Math.abs(minInQueue - press_floor) +
                                 5 *
-                                    betweenCount(
+                                    this.betweenCount(
                                         this.current_floor[i],
                                         minInQueue,
                                         i
@@ -182,16 +176,7 @@ export default {
         calculateDownDistance(press_floor) {
             var maxDistance = 2 * this.floor_count //可能出现的最小距离
             var distance = 0
-            var elevatorToPush = 1 //放入的电梯序号
-            // 希望在最短时间内达到呼层
-            // 计算到呼层的步数（1s/步）+5s*当中停下的楼层：
-            // if没有运动 else：
-            // if当前层在呼层的下面或当前层
-            //      电梯向上运动
-            //      电梯向下运动
-            // else当前层在呼层的上面
-            //      电梯向上运动
-            //      电梯向下运动
+            var elevatorToPush = 1
             for (var i = 0; i < this.ele_count; i++) {
                 if (!this.running[i]) {
                     distance = Math.abs(press_floor - this.current_floor[i])
@@ -276,7 +261,6 @@ export default {
             this.press_floor = floor_num
             //把当前需要加入的电梯ID、楼层以及上下都传给子组件
             this.call_ele_id = this.calculateUpDistance(floor_num)
-
             //把状态传递给响应电梯子组件
             this.$refs.insidechild[this.call_ele_id - 1].addOutside(
                 this.up,
@@ -326,6 +310,14 @@ export default {
             this.call[id - 1] = child_queue
             this.going_up[id - 1] = child_up
             console.log("ele_id:", id)
+        },
+        //更新outside
+        updateOutsideUp(floor) {
+            this.$refs.outsideChild[floor - 1].upStateRestoration()
+            console.log("楼：", floor)
+        },
+        updateOutsideDown(floor) {
+            this.$refs.outsideChild[floor - 1].downStateRestoration()
         }
     },
     created() {

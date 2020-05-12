@@ -14,6 +14,7 @@
                     size="small"
                     type="primary"
                     @click="handleDownClick()"
+                    :class="{ 'button-click': this.down }"
                     ><i class="el-icon-bottom"></i
                 ></el-button>
             </el-button-group>
@@ -49,6 +50,13 @@ export default {
                 this.down = true
                 this.$emit("childCallFloorDown", this.floor_id)
             }
+        },
+        upStateRestoration() {
+            console.log(this.floor_id, "变色")
+            this.up = false
+        },
+        downStateRestoration() {
+            this.down = false
         }
     }
 }
@@ -61,7 +69,7 @@ export default {
     margin: 20px auto 20px auto;
 }
 
-/* .button-click {
-    background: blue;
-} */
+.button-click {
+    background: #b5d2ef;
+}
 </style>
