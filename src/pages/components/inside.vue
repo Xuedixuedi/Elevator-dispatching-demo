@@ -195,7 +195,7 @@ export default {
         },
         //开门警告
         doorAlert() {
-            if (this.running && this.door == false) {
+            if (this.running) {
                 alert("运行期间禁止开门！")
                 this.door = false
             }
