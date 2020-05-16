@@ -34,9 +34,9 @@
 
 ### 预览方式
 
-项目在线预览地址（需联网）：https://xuedixuedi.github.io/Elevator-dispatching-demo/dist/
+1. 项目在线预览地址（需联网）：https://xuedixuedi.github.io/Elevator-dispatching-demo/dist/
 
-或克隆本仓库/进入作业文件夹后，在终端输入以下命令预览：
+2. 或克隆本仓库/进入作业文件夹后，在终端输入以下命令预览：
 
 ```shell
 # install dependencies
@@ -52,11 +52,11 @@ npm run build
 npm run build --report
 ```
 
-打开浏览器，输入 http://localhost:8080/ 预览
+​	打开浏览器，输入 http://localhost:8080/ 预览
 
 ### 组件构成
 
-![未命名文件 (1)的副本](figure/未命名文件 (1)的副本.png)
+![未命名文件 (1)的副本](figure/structure.png)
 
 | 组件    | 内容                        | 负责逻辑             |
 | ------- | --------------------------- | -------------------- |
